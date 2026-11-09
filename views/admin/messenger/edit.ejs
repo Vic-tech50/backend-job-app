@@ -1,0 +1,529 @@
+<%- include('../../layouts/head') %>
+
+
+
+    <style>
+        /* =====================================================
+           MODERN ADMIN UI
+        ===================================================== */
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fb;
+        }
+
+        /* Header */
+        .header {
+            box-shadow: 0 1px 10px rgba(0, 0, 0, .05);
+            background: #ffffff;
+            z-index: 100;
+        }
+
+        .header .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-search .form-control {
+            border: 0;
+            background: #f5f7fb;
+            border-radius: 10px;
+            height: 42px;
+        }
+
+        .header-search .search-icon {
+            color: #7b8190;
+        }
+
+        /* Header right */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-right > div {
+            margin-left: 5px;
+        }
+
+        .dashboard-setting,
+        .user-notification {
+            width: 42px;
+            height: 42px;
+        }
+
+        .dashboard-setting > div > a,
+        .user-notification > div > a {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: .2s ease;
+        }
+
+        .dashboard-setting > div > a:hover,
+        .user-notification > div > a:hover {
+            background: #f1f4f9;
+        }
+
+        /* Notification */
+        .notification-active {
+            position: absolute;
+            top: 7px;
+            right: 6px;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #ef4444;
+            border: 2px solid #fff;
+        }
+
+        .notification-list {
+            width: 360px;
+        }
+
+        .notification-list ul {
+            padding: 0;
+            margin: 0;
+        }
+
+        .notification-list li a {
+            display: flex;
+            gap: 12px;
+            padding: 14px 16px;
+            border-bottom: 1px solid #f0f2f5;
+            transition: .2s ease;
+        }
+
+        .notification-list li a:hover {
+            background: #f8fafc;
+        }
+
+        .notification-list img {
+            width: 42px;
+            height: 42px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .notification-list h3 {
+            font-size: 13px;
+            font-weight: 600;
+            margin: 0 0 3px;
+            color: #1f2937;
+        }
+
+        .notification-list p {
+            font-size: 12px;
+            line-height: 1.5;
+            color: #7b8190;
+            margin: 0;
+        }
+
+        /* User */
+        .user-info-dropdown .dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px 10px;
+            border-radius: 12px;
+        }
+
+        .user-info-dropdown .dropdown-toggle:hover {
+            background: #f5f7fb;
+        }
+
+        .user-icon img {
+            width: 38px;
+            height: 38px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #e9edf3;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        .left-side-bar {
+            background: #111827;
+            box-shadow: 3px 0 15px rgba(0, 0, 0, .06);
+        }
+
+        .brand-logo {
+            background: #111827;
+            border-bottom: 1px solid rgba(255,255,255,.07);
+        }
+
+        .brand-logo img {
+            max-height: 38px;
+            max-width: 150px;
+        }
+
+        .sidebar-menu {
+            padding: 18px 12px;
+        }
+
+        .sidebar-menu ul li {
+            margin-bottom: 4px;
+        }
+
+        .sidebar-menu ul li a {
+            border-radius: 9px;
+            padding: 12px 14px;
+            color: #9ca3af;
+            transition: all .2s ease;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .sidebar-menu ul li a:hover {
+            background: rgba(255,255,255,.07);
+            color: #fff;
+            transform: translateX(2px);
+        }
+
+        .sidebar-menu ul li.active > a {
+            background: #2563eb;
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(37,99,235,.25);
+        }
+
+        .sidebar-menu .micon {
+            color: inherit;
+            font-size: 18px;
+        }
+
+        .sidebar-menu .mtext {
+            margin-left: 5px;
+        }
+
+        .sidebar-small-cap {
+            color: #6b7280;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            padding: 18px 14px 8px;
+        }
+
+        .sidebar-menu .dropdown-divider {
+            border-color: rgba(255,255,255,.07);
+            margin: 15px 5px;
+        }
+
+        /* =====================================================
+           CONTENT
+        ===================================================== */
+
+        .main-container {
+            background: #f5f7fb;
+            min-height: calc(100vh - 70px);
+        }
+
+        .page-header {
+            background: transparent;
+            padding-top: 10px;
+        }
+
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+        }
+
+        .breadcrumb-item {
+            font-size: 12px;
+        }
+
+        /* Cards */
+        .card-box,
+        .pd-20.bg-white {
+            border-radius: 14px;
+            border: 1px solid #edf0f4;
+            box-shadow: 0 3px 15px rgba(15, 23, 42, .04);
+        }
+
+        /* Buttons */
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            border-color: #1d4ed8;
+        }
+
+        /* Tables */
+        .table {
+            background: #fff;
+        }
+
+        .table thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            font-weight: 700;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .table td {
+            vertical-align: middle;
+            color: #374151;
+            font-size: 13px;
+        }
+
+        .table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        /* Badge */
+        .badge {
+            border-radius: 20px;
+            padding: 5px 9px;
+            font-weight: 600;
+            font-size: 10px;
+        }
+
+        /* Mobile */
+        @media (max-width: 767px) {
+
+            .user-name {
+                display: none;
+            }
+
+            .notification-list {
+                width: 300px;
+            }
+
+            .header-search {
+                display: none;
+            }
+
+            .main-container {
+                padding: 0;
+            }
+        }
+    </style>
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <div class="main-container">
+    <div class="pd-ltr-20 xs-pd-20-10">
+
+        
+        <div class="page-header mb-30">
+            <div class="row align-items-center">
+                <div class="col-md-7">
+                    <h6 class="font-weight-100 mb-5">Messenger Details</h6>
+                    <p class="text-muted mb-0"><small>
+                        View messenger information and manage their account.
+                    </small>
+                    </p>
+                </div>
+
+                <div class="col-md-5 text-md-right mt-3 mt-md-0">
+                    <a href="/admin/messenger/index"
+                       class="btn btn-sm btn-outline-secondary">
+                        <i class="fa fa-arrow-left mr-1"></i>
+                        Go Back
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <% if (success && success.length> 0) { %>
+
+	<div class="alert alert-success alert-dismissible fade show" role="alert">
+								<strong>Success!</strong> <%= success %>.
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+
+	
+	<% } %>
+
+	<% if (error && error.length> 0) { %>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+								<strong>Error!</strong> <%= error %>.
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+	<% } %>
+
+        
+        
+        
+        
+        <div class="row">
+
+            
+            <div class="col-lg-4 col-md-5 mb-30">
+                <div class="card-box height-100-p pd-30">
+
+                    <div class="text-center">
+                        
+                                                    <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center mb-3"
+                                 style="width:120px;height:120px;">
+                                <i class="fa fa-user text-secondary" style="font-size:50px;"></i>
+                            </div>
+                        
+                        <h4 class="font-weight-700 mb-1">
+                            <%= messenger.fullname || "Not Provided" %>
+                        </h4>
+
+                        <p class="text-muted mb-3">
+                            <%= messenger.email || "Not Provided" %>
+                        </p>
+
+                                                    <span class="badge badge-success px-3 py-2">
+                                <i class="fa fa-check-circle mr-1"></i> Active Account
+                            </span>
+                                            </div>
+
+                    <hr>
+
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">Agent ID</small>
+                        <strong># <%= messenger.id || "Not Provided" %></strong>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">Phone Number</small>
+                        <strong><%= messenger.phone || "Not Provided" %></strong>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">Account Type</small>
+                        <strong>Messenger</strong>
+                    </div>
+
+                    <div class="mb-0">
+                        <small class="text-muted d-block mb-1">Registration Date</small>
+                        <strong>
+                            <%= messenger.date.toDateString() || "Not Provided" %>
+                        </strong>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="col-lg-8 col-md-7 mb-30">
+
+                
+                <div class="card-box pd-30 mb-30">
+                    <h5 class="font-weight-700 mb-4">
+                        <i class="fa fa-user-circle text-success mr-2"></i>
+                        Personal Information
+                    </h5>
+
+                    <div class="row">
+                        <div class="col-sm-6 mb-4">
+                            <small class="text-muted d-block mb-1">Full Name</small>
+                            <strong><%= messenger.fullname || "Not Provided" %></strong>
+                        </div>
+
+                        <div class="col-sm-6 mb-4">
+                            <small class="text-muted d-block mb-1">Email Address</small>
+                            <strong><%= messenger.email || "Not Provided" %></strong>
+                        </div>
+
+                        <div class="col-sm-6 mb-4">
+                            <small class="text-muted d-block mb-1">Phone Number</small>
+                            <strong><%= messenger.phone || "Not Provided" %></strong>
+                        </div>
+
+                        <div class="col-sm-6 mb-4">
+                            <small class="text-muted d-block mb-1">Account Status</small>
+                            <strong>
+                                <%= messenger.role != "Blocked" ? "Active" : "Blocked" %>
+                            </strong>
+                        </div>
+
+                        <div class="col-sm-6 mb-4">
+                            <small class="text-muted d-block mb-1">Registered On</small>
+                            <strong>
+                                <%= messenger.date.toDateString() || "Not Provided" %>
+                            </strong>
+                        </div>
+
+                        
+
+                       
+                    </div>
+                </div>
+
+                
+                <div class="card-box pd-30 mb-30">
+                    <h5 class="font-weight-700 mb-2">
+                        <i class="fa fa-cog text-success mr-2"></i>
+                        Account Management
+                    </h5>
+
+                    <p class="text-muted mb-4">
+                        Manage this agent's access to the platform.
+                    </p>
+
+                    <div class="d-flex flex-wrap" style="gap:10px;">
+
+                        
+                                    <form action="<%= messenger.role != "Blocked" ? "/admin/messenger/block/" + messenger.id : "/admin/messenger/unblock/" + messenger.id %>"
+                                  method="POST"
+                                onsubmit="return confirm(`WARNING: This will <%= messenger.role != "Blocked" ? "block" : "unblock" %> this messenger account. Continue?`);">
+
+                                 
+                                
+                                <button type="submit" class="btn btn-sm btn-warning">
+                                    <i class="fa fa-ban mr-1"></i>
+                                    <%= messenger.role != "Blocked" ? "Block" : "Unblock" %> messenger
+                                </button>
+                            </form>
+                        
+                        
+                        <form action="/admin/messenger/delete/<%= messenger.id %>"
+                              method="POST"
+                              onsubmit="return confirm('WARNING: This will permanently delete this messenger account. This action may not be reversible. Continue?');">
+                                                        <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                <i class="fa fa-trash mr-1"></i>
+                                Delete messenger
+                            </button>
+                        </form>
+
+                    </div>
+
+                    <div class="alert alert-warning mt-4 mb-0">
+                        <i class="fa fa-exclamation-triangle mr-1"></i>
+                        <strong>Important:</strong>
+                        <small>
+                        Blocking should prevent the messenger from accessing the platform.
+                        Deleting may also affect related property listings and records,
+                        depending on your database relationships.
+                        </small>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('../../layouts/footer') %>
