@@ -48,6 +48,25 @@ router.get('/messenger/edit/:id', async (req, res) => {
   }
 });
 
+router.get('/worker/show/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const [rows] = await db.query("SELECT * FROM users WHERE id = ?", [id]);
+
+    if (rows.length === 0) {
+      req.flash("error", "Worker not found");
+      return res.redirect("/admin/worker");
+    }
+
+    const artisan = rows[0]; // ✅ Get the first row
+    res.render("admin/worker/show", { artisan });
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "Something went wrong while fetching lesson details");
+    res.redirect("/admin/worker/show/:id");
+  }
+});
+
 
 router.post('/messenger/block/:id', async (req, res) => {
   try {
