@@ -1,0 +1,577 @@
+
+<%- include('../../layouts/head') %>
+
+<%
+  // Safely prepare the booking status.
+  const status = String(booking.status || 'pending').toLowerCase();
+
+  const statusClass =
+    status === 'completed' ? 'status-completed' :
+    status === 'accepted' ? 'status-accepted' :
+    status === 'rejected' ? 'status-rejected' :
+    'status-pending';
+
+  // Format a date safely.
+  const formatDate = (value) => {
+    if (!value) return 'Not available';
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) return 'Not available';
+
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    });
+  };
+
+  const customerName = booking.customer_name || 'Unknown customer';
+  const artisanName = booking.artisan_name || 'Not assigned';
+
+  const getInitials = (name) => {
+    return String(name)
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(part => part.charAt(0))
+      .join('')
+      .toUpperCase();
+  };
+%>
+
+<style>
+  .booking-details-page {
+    background: #f6f8fb;
+  }
+
+  .details-header {
+    margin-bottom: 25px;
+  }
+
+  .details-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #17221a;
+  }
+
+  .details-subtitle {
+    color: #89949c;
+    font-size: 13px;
+  }
+
+  .details-card {
+    background: #fff;
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 5px 25px rgba(0,0,0,.045);
+    margin-bottom: 22px;
+    overflow: hidden;
+  }
+
+  .details-card-header {
+    padding: 20px 23px;
+    border-bottom: 1px solid #edf0f2;
+  }
+
+  .details-card-header h5 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #25312a;
+    margin: 0;
+  }
+
+  .details-card-body {
+    padding: 23px;
+  }
+
+  .booking-overview {
+    padding: 25px;
+  }
+
+  .booking-reference {
+    color: #89949c;
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .booking-service-title {
+    font-size: 23px;
+    font-weight: 700;
+    color: #17221a;
+    margin-bottom: 10px;
+  }
+
+  .booking-description {
+    color: #7b8794;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  .booking-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 13px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: capitalize;
+  }
+
+  .booking-status::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 7px;
+  }
+
+  .status-pending {
+    background: #fff4e5;
+    color: #b7791f;
+  }
+
+  .status-pending::before { background: #d97706; }
+
+  .status-accepted {
+    background: #eaf2ff;
+    color: #2563eb;
+  }
+
+  .status-accepted::before { background: #2563eb; }
+
+  .status-completed {
+    background: #eaf7ed;
+    color: #16803a;
+  }
+
+  .status-completed::before { background: #22c55e; }
+
+  .status-rejected {
+    background: #fff0f0;
+    color: #dc2626;
+  }
+
+  .status-rejected::before { background: #ef4444; }
+
+  .profile-section {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+  }
+
+  .profile-avatar {
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+    border-radius: 50%;
+    background: #eaf7ed;
+    color: #16803a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .profile-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #25312a;
+    margin-bottom: 4px;
+  }
+
+  .profile-email {
+    font-size: 11px;
+    color: #89949c;
+    word-break: break-word;
+  }
+
+  .info-item {
+    margin-bottom: 19px;
+  }
+
+  .info-label {
+    display: block;
+    color: #98a2a9;
+    font-size: 11px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: .4px;
+  }
+
+  .info-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: #344139;
+    word-break: break-word;
+  }
+
+  .booking-timeline {
+    position: relative;
+    padding-left: 28px;
+  }
+
+  .timeline-item {
+    position: relative;
+    padding-bottom: 25px;
+  }
+
+  .timeline-item:last-child {
+    padding-bottom: 0;
+  }
+
+  .timeline-item::before {
+    content: "";
+    position: absolute;
+    left: -22px;
+    top: 5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #22c55e;
+  }
+
+  .timeline-item:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: -18px;
+    top: 16px;
+    width: 2px;
+    height: calc(100% - 10px);
+    background: #e5eae7;
+  }
+
+  .timeline-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #344139;
+    margin-bottom: 4px;
+  }
+
+  .timeline-date {
+    font-size: 11px;
+    color: #98a2a9;
+  }
+
+  .booking-action {
+    display: block;
+    width: 100%;
+    padding: 11px 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    border: 0;
+    cursor: pointer;
+  }
+
+  .action-primary {
+    background: #093411;
+    color: #fff;
+  }
+
+  .action-primary:hover {
+    background: #145522;
+    color: #fff;
+  }
+
+  .action-light {
+    background: #f2f5f3;
+    color: #344139;
+  }
+
+  .action-danger {
+    background: #fff0f0;
+    color: #dc2626;
+  }
+
+  @media(max-width: 767px) {
+    .details-title { font-size: 20px; }
+    .booking-overview { padding: 20px; }
+    .details-card-body { padding: 18px; }
+  }
+</style>
+
+<div class="main-container booking-details-page">
+  <div class="pd-ltr-20 xs-pd-20-10">
+
+    <!-- Header -->
+    <div class="details-header">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h4 class="details-title">Booking Details</h4>
+          <p class="details-subtitle">
+            Review booking information, customer and artisan details.
+          </p>
+        </div>
+
+        <div class="col-md-4 text-md-right">
+          <a href="/admin/bookings" class="btn btn-outline-secondary btn-sm">
+            <i class="fa fa-arrow-left"></i> Back to Bookings
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking overview -->
+    <div class="details-card">
+      <div class="booking-overview">
+        <div class="row align-items-center">
+
+          <div class="col-md-8">
+            <div class="booking-reference">
+              BOOKING REFERENCE:
+              #<%= booking.booking_id || booking.id %>
+            </div>
+
+            <h3 class="booking-service-title">
+              <%= booking.service || 'Service unavailable' %>
+            </h3>
+
+            <p class="booking-description">
+              <%= booking.description || 'No job description was provided.' %>
+            </p>
+          </div>
+
+          <div class="col-md-4 text-md-right">
+            <span class="booking-status <%= statusClass %>">
+              <%= status %>
+            </span>
+
+            <div class="mt-3">
+              <small class="text-muted">Booking ID</small>
+              <h5 class="font-weight-bold">
+                #<%= booking.id %>
+              </h5>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+
+      <!-- Main information -->
+      <div class="col-lg-8">
+
+        <!-- Customer information -->
+        <div class="details-card">
+          <div class="details-card-header">
+            <h5><i class="fa fa-user text-primary mr-2"></i> Customer Information</h5>
+          </div>
+
+          <div class="details-card-body">
+            <div class="profile-section mb-4">
+              <div class="profile-avatar">
+                <%= getInitials(customerName) %>
+              </div>
+
+              <div>
+                <div class="profile-name"><%= customerName %></div>
+                <div class="profile-email text-capitalize">
+                  <%= booking.customer_email || 'Email unavailable' %>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 info-item">
+                <span class="info-label">Full Name</span>
+                <span class="info-value"><%= customerName %></span>
+              </div>
+
+              <div class="col-md-6 info-item">
+                <span class="info-label">Email Address</span>
+                <span class="info-value text-capitalize">
+                  <%= booking.customer_email || 'Not available' %>
+                </span>
+              </div>
+
+              <div class="col-md-6 info-item">
+                <span class="info-label">Phone Number</span>
+                <span class="info-value">
+                  <%= booking.customer_phone || 'Not available' %>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Artisan information -->
+        <div class="details-card">
+          <div class="details-card-header">
+            <h5><i class="fa fa-briefcase text-success mr-2"></i> Assigned Artisan</h5>
+          </div>
+
+          <div class="details-card-body">
+
+            <div class="profile-section mb-4">
+              <div class="profile-avatar">
+                <%= getInitials(artisanName) %>
+              </div>
+
+              <div>
+                <div class="profile-name"><%= artisanName %></div>
+                <div class="profile-email">
+                  <%= booking.artisan_email || 'Artisan email unavailable' %>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 info-item">
+                <span class="info-label">Artisan Name</span>
+                <span class="info-value"><%= artisanName %></span>
+              </div>
+
+              <div class="col-md-6 info-item">
+                <span class="info-label">Email Address</span>
+                <span class="info-value text-capitalize">
+                  <%= booking.artisan_email || 'Not available' %>
+                </span>
+              </div>
+
+              <div class="col-md-6 info-item">
+                <span class="info-label">Phone Number</span>
+                <span class="info-value">
+                  <%= booking.artisan_phone || 'Not available' %>
+                </span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Appointment information -->
+        <div class="details-card">
+          <div class="details-card-header">
+            <h5><i class="fa fa-calendar text-warning mr-2"></i> Appointment Information</h5>
+          </div>
+
+          <div class="details-card-body">
+            <div class="row">
+
+              <div class="col-md-6 info-item">
+                <span class="info-label">Preferred Date</span>
+                <span class="info-value">
+                  <%= formatDate(booking.preferred_date) %>
+                </span>
+              </div>
+
+              <div class="col-md-6 info-item">
+                <span class="info-label">Booking Created</span>
+                <span class="info-value">
+                  <%= formatDate(booking.date) %>
+                </span>
+              </div>
+
+              <div class="col-md-12 info-item">
+                <span class="info-label">Job Description</span>
+                <span class="info-value">
+                  <%= booking.description || 'No description provided.' %>
+                </span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-lg-4">
+
+        <!-- Admin actions -->
+        <div class="details-card">
+          <div class="details-card-header">
+            <h5>Booking Management</h5>
+          </div>
+
+          <div class="details-card-body">
+
+            <a
+              href="/admin/booking/edit/<%= booking.id %>"
+              class="booking-action action-primary"
+            >
+              <i class="fa fa-edit mr-2"></i> Edit Booking
+            </a>
+
+            <a
+              href="/admin/bookings"
+              class="booking-action action-light"
+            >
+              <i class="fa fa-list mr-2"></i> All Bookings
+            </a>
+
+            <form
+              action="/admin/booking/delete/<%= booking.id %>"
+              method="POST"
+              onsubmit="return confirm('Are you sure you want to delete this booking?')"
+            >
+              <button type="submit" class="booking-action action-danger">
+                <i class="fa fa-trash mr-2"></i> Delete Booking
+              </button>
+            </form>
+
+          </div>
+        </div>
+
+        <!-- Booking timeline -->
+        <div class="details-card">
+          <div class="details-card-header">
+            <h5>Booking Overview</h5>
+          </div>
+
+          <div class="details-card-body">
+            <div class="booking-timeline">
+
+              <div class="timeline-item">
+                <div class="timeline-title">Booking Created</div>
+                <div class="timeline-date">
+                  <%= formatDate(booking.created_at) %>
+                </div>
+              </div>
+
+              <% if (['accepted', 'completed'].includes(status)) { %>
+                <div class="timeline-item">
+                  <div class="timeline-title">Booking Accepted</div>
+                  <div class="timeline-date">Status: Accepted</div>
+                </div>
+              <% } %>
+
+              <% if (status === 'completed') { %>
+                <div class="timeline-item">
+                  <div class="timeline-title">Job Completed</div>
+                  <div class="timeline-date">Status: Completed</div>
+                </div>
+              <% } %>
+
+              <% if (status === 'rejected') { %>
+                <div class="timeline-item">
+                  <div class="timeline-title">Booking Rejected</div>
+                  <div class="timeline-date">Status: Rejected</div>
+                </div>
+              <% } %>
+
+              <% if (status === 'pending') { %>
+                <div class="timeline-item">
+                  <div class="timeline-title">Awaiting Confirmation</div>
+                  <div class="timeline-date">Waiting for booking action</div>
+                </div>
+              <% } %>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<%- include('../../layouts/footer') %>

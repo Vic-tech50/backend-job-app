@@ -1,0 +1,533 @@
+<%- include('../../layouts/head') %>
+
+
+<style>
+  .bookings-page {
+    background: #f6f8fb;
+  }
+
+  .page-header-modern {
+    margin-bottom: 25px;
+  }
+
+  .page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #17221a;
+    margin-bottom: 5px;
+  }
+
+  .page-subtitle {
+    color: #7b8794;
+    font-size: 14px;
+  }
+
+  .booking-stat-card {
+    background: #fff;
+    border: 0;
+    border-radius: 14px;
+    padding: 20px;
+    height: 100%;
+    box-shadow: 0 5px 20px rgba(0,0,0,.045);
+  }
+
+  .stat-icon {
+    width: 43px;
+    height: 43px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    margin-bottom: 14px;
+  }
+
+  .stat-blue { background: #eaf2ff; color: #2563eb; }
+  .stat-orange { background: #fff4e5; color: #d97706; }
+  .stat-green { background: #eaf7ed; color: #16803a; }
+  .stat-red { background: #fff0f0; color: #dc2626; }
+
+  .stat-number {
+    font-size: 25px;
+    font-weight: 700;
+    color: #17221a;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: #87919a;
+  }
+
+  .booking-card {
+    background: #fff;
+    border: 0;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 25px rgba(0,0,0,.05);
+  }
+
+  .booking-card-header {
+    padding: 22px 25px;
+    border-bottom: 1px solid #edf0f2;
+  }
+
+  .booking-card-header h5 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #17221a;
+    margin-bottom: 4px;
+  }
+
+  .booking-table-wrapper {
+    padding: 0 15px 15px;
+    overflow-x: auto;
+  }
+
+  .booking-table {
+    min-width: 1100px;
+    margin-bottom: 0;
+  }
+
+  .booking-table thead th {
+    background: #fafbfc;
+    border-bottom: 1px solid #edf0f2 !important;
+    color: #7b8794;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    padding: 16px 12px !important;
+    white-space: nowrap;
+  }
+
+  .booking-table tbody td {
+    border-top: 1px solid #f0f2f4 !important;
+    padding: 15px 12px !important;
+    vertical-align: middle !important;
+    color: #4a5560;
+    font-size: 13px;
+  }
+
+  .booking-table tbody tr:hover {
+    background: #fafcfb;
+  }
+
+  .booking-id {
+    font-weight: 700;
+    color: #2563eb;
+  }
+
+  .person-info strong {
+    display: block;
+    color: #25312a;
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+
+  .person-info small {
+    display: block;
+    color: #89949c;
+    font-size: 11px;
+    margin-top: 2px;
+  }
+
+  .job-title {
+    color: #25312a;
+    font-weight: 600;
+  }
+
+  .job-description {
+    display: block;
+    color: #89949c;
+    font-size: 11px;
+    max-width: 190px;
+    white-space: normal;
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 20px;
+    padding: 6px 11px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: capitalize;
+    white-space: nowrap;
+  }
+
+  .status-badge::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 7px;
+  }
+
+  .status-pending { background: #fff4e5; color: #b7791f; }
+  .status-pending::before { background: #d97706; }
+
+  .status-accepted { background: #eaf2ff; color: #2563eb; }
+  .status-accepted::before { background: #2563eb; }
+
+  .status-completed { background: #eaf7ed; color: #16803a; }
+  .status-completed::before { background: #22c55e; }
+
+  .status-rejected { background: #fff0f0; color: #dc2626; }
+  .status-rejected::before { background: #ef4444; }
+
+  .status-default { background: #f1f3f5; color: #65716a; }
+  .status-default::before { background: #98a2a9; }
+
+  .booking-action-btn {
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 8px;
+    background: #f5f7f6;
+    color: #65716a;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .booking-action-btn:hover {
+    background: #edf7ef;
+    color: #093411;
+  }
+
+  .dropdown-menu {
+    border: 0;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.12);
+    padding: 7px;
+  }
+
+  .dropdown-menu .dropdown-item {
+    border-radius: 7px;
+    padding: 9px 12px;
+    font-size: 13px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 65px 20px !important;
+  }
+
+  .empty-state i {
+    font-size: 40px;
+    color: #aab5ad;
+    margin-bottom: 15px;
+  }
+
+  .empty-state h6 {
+    font-weight: 700;
+    color: #27322c;
+  }
+
+  .empty-state p {
+    color: #98a2a9;
+    font-size: 13px;
+  }
+
+  @media(max-width: 767px) {
+    .page-title { font-size: 20px; }
+    .booking-card-header { padding: 18px; }
+  }
+</style>
+
+<div class="main-container bookings-page">
+  <div class="pd-ltr-20 xs-pd-20-10">
+    <div class="min-height-200px">
+
+      <!-- Page heading -->
+      <div class="page-header-modern">
+        <div class="row align-items-center">
+          <div class="col-md-7">
+            <h4 class="page-title">Booking Management</h4>
+            <p class="page-subtitle">
+              Monitor customer requests, assigned artisans and booking progress.
+            </p>
+          </div>
+
+          <div class="col-md-5">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb justify-content-md-end">
+                <li class="breadcrumb-item">
+                  <a href="/home">Home</a>
+                </li>
+                <li class="breadcrumb-item active">Bookings</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calculate booking statistics -->
+      <%
+        const totalBookings = bookings.length;
+
+        const pendingBookings = bookings.filter(b =>
+          String(b.status || '').toLowerCase() === 'pending'
+        ).length;
+
+        const completedBookings = bookings.filter(b =>
+          String(b.status || '').toLowerCase() === 'completed'
+        ).length;
+
+        const rejectedBookings = bookings.filter(b =>
+          String(b.status || '').toLowerCase() === 'rejected'
+        ).length;
+      %>
+
+      <!-- Statistics -->
+      <div class="row mb-30">
+
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-15">
+          <div class="booking-stat-card">
+            <div class="stat-icon stat-blue">
+              <i class="fa fa-calendar"></i>
+            </div>
+            <div class="stat-number"><%= totalBookings %></div>
+            <div class="stat-label">Total Bookings</div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-15">
+          <div class="booking-stat-card">
+            <div class="stat-icon stat-orange">
+              <i class="fa fa-clock-o"></i>
+            </div>
+            <div class="stat-number"><%= pendingBookings %></div>
+            <div class="stat-label">Pending Bookings</div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-15">
+          <div class="booking-stat-card">
+            <div class="stat-icon stat-green">
+              <i class="fa fa-check-circle"></i>
+            </div>
+            <div class="stat-number"><%= completedBookings %></div>
+            <div class="stat-label">Completed Bookings</div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-15">
+          <div class="booking-stat-card">
+            <div class="stat-icon stat-red">
+              <i class="fa fa-times-circle"></i>
+            </div>
+            <div class="stat-number"><%= rejectedBookings %></div>
+            <div class="stat-label">Rejected Bookings</div>
+          </div>
+        </div>
+
+      </div>
+
+      
+        <% if (success && success.length> 0) { %>
+
+	<div class="alert alert-success alert-dismissible fade show" role="alert">
+								<strong>Success!</strong> <%= success %>.
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+
+	
+	<% } %>
+
+	<% if (error && error.length> 0) { %>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+								<strong>Error!</strong> <%= error %>.
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+	<% } %>
+    
+
+      <!-- Bookings table -->
+      <div class="booking-card mb-30">
+
+        <div class="booking-card-header">
+          <h5>All Bookings</h5>
+          <small class="text-muted">
+            View customer requests, assigned artisans and booking status.
+          </small>
+        </div>
+
+        <div class="booking-table-wrapper">
+          <table class="table hover nowrap booking-table">
+
+            <thead>
+              <tr>
+                <th>Booking ID</th>
+                <th>Job Details</th>
+                <th>Customer</th>
+                <th>Artisan</th>
+                <th>Appointment</th>
+                <th>Status</th>
+                <th class="datatable-nosort">Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <% if (bookings && bookings.length > 0) { %>
+
+                <% bookings.forEach(booking => { %>
+
+                  <%
+                    const status = String(booking.status || 'unknown').toLowerCase();
+
+                    const statusClass =
+                      status === 'pending' ? 'status-pending' :
+                      status === 'accepted' ? 'status-accepted' :
+                      status === 'completed' ? 'status-completed' :
+                      status === 'rejected' ? 'status-rejected' :
+                      'status-default';
+
+                    const appointmentDate = booking.preferred_date
+                      ? new Date(booking.preferred_date)
+                      : null;
+
+                    const validDate = appointmentDate &&
+                      !Number.isNaN(appointmentDate.getTime());
+                  %>
+
+                  <tr>
+
+                    <!-- Booking ID -->
+                    <td>
+                      <span class="booking-id">
+                        #<%= booking.booking_id || booking.id %>
+                      </span>
+                    </td>
+
+                    <!-- Job -->
+                    <td>
+                      <span class="job-title">
+                        <%= booking.service || 'Service unavailable' %>
+                      </span>
+
+                      <span class="job-description">
+                        <%= booking.description || 'No description provided' %>
+                      </span>
+                    </td>
+
+                    <!-- Customer -->
+                    <td>
+                      <div class="person-info">
+                        <strong>
+                          <%= booking.customer_name || 'Unknown customer' %>
+                        </strong>
+                        <small><%= booking.customer_email || 'No email' %></small>
+                        <small><%= booking.customer_phone || 'No phone number' %></small>
+                      </div>
+                    </td>
+
+                    <!-- Artisan -->
+                    <td>
+                      <div class="person-info">
+                        <strong>
+                          <%= booking.artisan_name || 'Not assigned' %>
+                        </strong>
+                        <small><%= booking.artisan_email || 'No email' %></small>
+                        <small><%= booking.artisan_phone || 'No phone number' %></small>
+                      </div>
+                    </td>
+
+                    <!-- Appointment -->
+                    <td>
+                      <% if (validDate) { %>
+                        <strong>
+                          <%= appointmentDate.toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric'
+                          }) %>
+                        </strong>
+                      <% } else { %>
+                        <span class="text-muted">Not scheduled</span>
+                      <% } %>
+                    </td>
+
+                    <!-- Status -->
+                    <td>
+                      <span class="status-badge <%= statusClass %>">
+                        <%= status %>
+                      </span>
+                    </td>
+
+                    <!-- Actions -->
+                    <td>
+                      <div class="dropdown">
+                        <button
+                          class="booking-action-btn dropdown-toggle"
+                          type="button"
+                          data-toggle="dropdown"
+                          aria-haspopup="true"
+                          aria-expanded="false"
+                        >
+                          <i class="dw dw-more"></i>
+                        </button>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                          <a
+                            class="dropdown-item"
+                            href="/admin/booking/show/<%= booking.id %>"
+                          >
+                            <i class="dw dw-eye"></i> View Details
+                          </a>
+
+                          <a
+                            class="dropdown-item"
+                            href="/admin/booking/edit/<%= booking.id %>"
+                          >
+                            <i class="dw dw-edit2"></i> Edit Booking
+                          </a>
+
+                          <a
+                            class="dropdown-item text-danger"
+                            href="/admin/booking/delete/<%= booking.id %>"
+                            onclick="return confirm('Are you sure you want to delete this booking?')"
+                          >
+                            <i class="dw dw-delete-3"></i> Delete Booking
+                          </a>
+
+                        </div>
+                      </div>
+                    </td>
+
+                  </tr>
+
+                <% }); %>
+
+              <% } else { %>
+
+                <tr>
+                  <td colspan="7" class="empty-state">
+                    <i class="fa fa-calendar-times-o"></i>
+                    <h6>No Bookings Found</h6>
+                    <p>There are currently no bookings on the platform.</p>
+                  </td>
+                </tr>
+
+              <% } %>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<%- include('../../layouts/footer') %>

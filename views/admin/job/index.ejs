@@ -1,0 +1,459 @@
+
+<%- include('../../layouts/head') %>
+
+<style>
+
+    .page-header-modern {
+    margin-bottom: 25px;
+  }
+
+  .page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #17221a;
+    margin-bottom: 5px;
+  }
+
+  .page-subtitle {
+    color: #7b8794;
+    font-size: 14px;
+    margin-bottom: 0;
+  }
+
+  .breadcrumb-modern {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+  }
+
+  .breadcrumb-modern .breadcrumb-item {
+    font-size: 13px;
+  }
+
+  .breadcrumb-modern a {
+    color: #7b8794;
+  }
+
+  .breadcrumb-modern .active {
+    color: #093411;
+    font-weight: 600;
+  }
+    .jobs-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 25px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, .04);
+    }
+
+    .tag-input-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        min-height: 55px;
+        padding: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        cursor: text;
+    }
+
+    .tag-input-container:focus-within {
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, .1);
+    }
+
+    .job-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #e8f3ff;
+        color: #1769aa;
+        padding: 7px 12px;
+        border-radius: 5px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .job-tag button {
+        border: none;
+        background: transparent;
+        color: #1769aa;
+        font-size: 17px;
+        cursor: pointer;
+        padding: 0;
+        line-height: 1;
+    }
+
+    #jobInput {
+        flex: 1;
+        min-width: 150px;
+        border: none;
+        outline: none;
+        padding: 5px;
+        background: transparent;
+    }
+
+    .suggestion {
+        display: inline-block;
+        padding: 6px 12px;
+        margin: 4px;
+        background: #f1f3f5;
+        border-radius: 20px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .suggestion:hover {
+        background: #dceeff;
+        color: #1769aa;
+    }
+
+     .agents-table-wrapper {
+    padding: 0 10px 15px;
+  }
+
+  .agents-table {
+    margin-bottom: 0 !important;
+  }
+
+  .agents-table thead th {
+    background: #fafbfc;
+    border-top: 0 !important;
+    border-bottom: 1px solid #edf0f2 !important;
+    color: #7b8794;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    padding: 15px 12px !important;
+  }
+
+  .agents-table tbody td {
+    border-top: 1px solid #f0f2f4 !important;
+    padding: 16px 12px !important;
+    vertical-align: middle !important;
+    color: #4a5560;
+    font-size: 13px;
+  }
+
+  .agents-table tbody tr {
+    transition: background .2s ease;
+  }
+
+  .agents-table tbody tr:hover {
+    background: #fafcfb;
+  }
+</style>
+
+<div class="main-container">
+    <div class="pd-ltr-20">
+
+          <div class="page-header-modern">
+
+        <div class="row align-items-center">
+
+          <div class="col-md-7 col-sm-12">
+
+            <h4 class="page-title">
+             Manage Job Categories
+            </h4>
+
+            <p class="page-subtitle">
+               Add the different types of jobs available on your platform.
+            </p>
+
+          </div>
+
+          <div class="col-md-5 col-sm-12">
+
+            <nav aria-label="breadcrumb">
+
+              <ol class="breadcrumb breadcrumb-modern justify-content-md-end">
+
+                <li class="breadcrumb-item">
+                  <a href="http://my-app.test/home">
+                    Home
+                  </a>
+                </li>
+
+                <li class="breadcrumb-item active">
+                  Job Categories
+                </li>
+
+              </ol>
+
+            </nav>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      
+
+       
+<div class="row">
+    <div class="col-sm-12 col-md-7 col-lg-7">
+        <!-- Add jobs card -->
+        <div class="jobs-card">
+            <h5 class="mb-2">Add Job Categories</h5>
+
+            <small class="text-muted mb-4">
+                Type a job category and press Enter or comma to add it.
+                You can add multiple categories at once.
+            </small>
+
+              <% if (success && success.length> 0) { %>
+
+	<div class="alert alert-success alert-dismissible fade show" role="alert">
+								<strong>Success!</strong> <%= success %>.
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+
+	
+	<% } %>
+
+	<% if (error && error.length> 0) { %>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+								<strong>Error!</strong> <%= error %>.
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+	<% } %>
+
+            <form action="/admin/jobs" method="POST" id="jobsForm" class="mt-4">
+
+                <label class="font-weight-bold">Job Categories</label>
+
+                <div class="tag-input-container" id="tagContainer">
+                    <input
+                        type="text"
+                        id="jobInput"
+                        placeholder="E.g. Painting, Welding, Plumbing..."
+                        autocomplete="off"
+                    >
+                </div>
+
+                <input type="hidden" name="jobs" id="jobsValue">
+
+                <small class="text-muted d-block mt-2">
+                    Press Enter or comma after typing each job. Click the ×
+                    on a tag to remove it.
+                </small>
+
+                <!-- Suggested categories -->
+                <div class="mt-4">
+                    <label class="font-weight-bold">Suggested Categories</label>
+
+                    <div>
+                        <% 
+                            const suggestions = [
+                                'Painting',
+                                'Welding',
+                                'Plumbing',
+                                'Electrical Installation',
+                                'Carpentry',
+                                'Masonry',
+                                'Tiling',
+                                'POP Installation',
+                                'Roofing',
+                                'Furniture Making',
+                                'AC Installation',
+                                'Generator Repair',
+                                'Solar Installation',
+                                'Cleaning',
+                                'Interior Decoration',
+                                'Mechanic',
+                                'Fashion Design',
+                                'Barbing',
+                                'Catering',
+                                'Photography'
+                            ];
+                        %>
+
+                        <% suggestions.forEach(job => { %>
+                            <span
+                                class="suggestion"
+                                onclick="addJob('<%= job.replace(/'/g, "\\'") %>')"
+                            >
+                                + <%= job %>
+                            </span>
+                        <% }) %>
+                    </div>
+                </div>
+
+                <hr class="mt-4">
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted">
+                        <strong id="tagCount">0</strong> categories added
+                    </span>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-save mr-1"></i>
+                        Save Categories
+                    </button>
+                </div>
+
+            </form>
+        </div>
+        </div>
+        <div class="col-sm-12 col-md-5 col-lg-5">
+            
+      <div class="card-box mb-30">
+        <div class="pd-20">
+          <h5 class="">All Job</h5>
+          <small class="mb-0">You can view and manage all Job from this table.</small>
+        </div>
+        <div class="pb-20">
+          <table class="table  hover nowrap agents-table">
+            <thead>
+              <tr class="text-uppercase ">
+                <th class="table-plus datatable-nosort">Job Categories</th>
+                
+                <th class="datatable-nosort">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+                <% jobs.forEach(job => { %>
+                    <tr>
+                     <td>
+                     
+                        <%= job.name %>
+                      
+                    </td>
+                    <td>
+                        <a href="/admin/jobs/delete/<%= job.id %>"><button type="button" class="btn" data-bgcolor="#bd081c" data-color="#ffffff" title="delete"><i class="fa fa-times"></i></button></a>
+
+                    </td>
+                    </tr>
+                    
+                <% }); %>
+               
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+        </div>
+
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Store all selected job categories.
+    let jobs = [];
+
+    const jobInput = document.getElementById('jobInput');
+    const tagContainer = document.getElementById('tagContainer');
+    const jobsValue = document.getElementById('jobsValue');
+    const tagCount = document.getElementById('tagCount');
+
+    // Add a new job category.
+    function addJob(value) {
+        const job = value.trim().replace(/,+$/, '');
+
+        if (!job) return;
+
+        // Prevent duplicate categories.
+        const exists = jobs.some(
+            item => item.toLowerCase() === job.toLowerCase()
+        );
+
+        if (exists) {
+            jobInput.value = '';
+            return;
+        }
+
+        jobs.push(job);
+        jobInput.value = '';
+
+        renderTags();
+    }
+
+    // Display all selected tags.
+    function renderTags() {
+        // Remove existing tags but preserve the input.
+        document.querySelectorAll('.job-tag').forEach(tag => tag.remove());
+
+        jobs.forEach((job, index) => {
+            const tag = document.createElement('span');
+            tag.className = 'job-tag';
+
+            const text = document.createElement('span');
+            text.textContent = job;
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.textContent = '×';
+            removeButton.setAttribute('aria-label', 'Remove ' + job);
+
+            removeButton.addEventListener('click', () => {
+                removeJob(index);
+            });
+
+            tag.appendChild(text);
+            tag.appendChild(removeButton);
+
+            tagContainer.insertBefore(tag, jobInput);
+        });
+
+        // Send the categories as a JSON string.
+        jobsValue.value = JSON.stringify(jobs);
+
+        // Update the number of categories.
+        tagCount.textContent = jobs.length;
+    }
+
+    // Remove a category.
+    function removeJob(index) {
+        jobs.splice(index, 1);
+        renderTags();
+    }
+
+    // Add category when Enter or comma is pressed.
+    jobInput.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter' || event.key === ',') {
+            event.preventDefault();
+            addJob(jobInput.value);
+        }
+
+        // Remove the last tag when Backspace is pressed on an empty input.
+        if (event.key === 'Backspace' && !jobInput.value && jobs.length) {
+            removeJob(jobs.length - 1);
+        }
+    });
+
+    // Add the remaining text if the user leaves the input.
+    jobInput.addEventListener('blur', function() {
+        if (jobInput.value.trim()) {
+            addJob(jobInput.value);
+        }
+    });
+
+    // Add category from the suggestions.
+    tagContainer.addEventListener('click', function() {
+        jobInput.focus();
+    });
+
+    // Prevent submitting an empty list.
+    document.getElementById('jobsForm').addEventListener('submit', function(event) {
+        if (jobInput.value.trim()) {
+            addJob(jobInput.value);
+        }
+
+        if (jobs.length === 0) {
+            event.preventDefault();
+            alert('Please add at least one job category.');
+        }
+    });
+</script>
+
+<%- include('../../layouts/footer') %>

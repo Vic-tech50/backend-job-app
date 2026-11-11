@@ -1,0 +1,435 @@
+
+<%- include('../../layouts/head') %>
+
+<%
+  const currentStatus = String(booking.status || 'pending').toLowerCase();
+
+  const formatDateInput = (value) => {
+    if (!value) return '';
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) return '';
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  };
+%>
+
+<style>
+  .edit-booking-page {
+    background: #f6f8fb;
+  }
+
+  .edit-header {
+    margin-bottom: 25px;
+  }
+
+  .edit-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #17221a;
+    margin-bottom: 5px;
+  }
+
+  .edit-subtitle {
+    font-size: 13px;
+    color: #89949c;
+  }
+
+  .edit-card {
+    background: #fff;
+    border: 0;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 25px rgba(0,0,0,.045);
+    margin-bottom: 22px;
+  }
+
+  .edit-card-header {
+    padding: 21px 25px;
+    border-bottom: 1px solid #edf0f2;
+  }
+
+  .edit-card-header h5 {
+    color: #25312a;
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 4px;
+  }
+
+  .edit-card-header p {
+    color: #89949c;
+    font-size: 12px;
+    margin: 0;
+  }
+
+  .edit-card-body {
+    padding: 25px;
+  }
+
+  .form-label-custom {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #344139;
+    margin-bottom: 8px;
+  }
+
+  .form-control-custom {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid #e4e9e6;
+    border-radius: 8px;
+    padding: 10px 13px;
+    font-size: 13px;
+    color: #344139;
+    background: #fff;
+    outline: none;
+    transition: border .2s;
+  }
+
+  .form-control-custom:focus {
+    border-color: #16803a;
+    box-shadow: 0 0 0 3px rgba(22,128,58,.08);
+  }
+
+  textarea.form-control-custom {
+    min-height: 125px;
+    resize: vertical;
+  }
+
+  .form-group-custom {
+    margin-bottom: 22px;
+  }
+
+  .form-hint {
+    display: block;
+    color: #98a2a9;
+    font-size: 11px;
+    margin-top: 6px;
+  }
+
+  .edit-section-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 9px;
+    background: #eaf7ed;
+    color: #16803a;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+  }
+
+  .booking-summary {
+    background: #f8faf9;
+    border: 1px solid #edf0f2;
+    border-radius: 10px;
+    padding: 18px;
+  }
+
+  .summary-label {
+    color: #98a2a9;
+    font-size: 11px;
+    margin-bottom: 5px;
+  }
+
+  .summary-value {
+    color: #25312a;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    word-break: break-word;
+  }
+
+  .edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 10px;
+  }
+
+  .btn-save {
+    background: #093411;
+    border: 0;
+    color: #fff;
+    padding: 11px 22px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .btn-save:hover {
+    background: #145522;
+    color: #fff;
+  }
+
+  .btn-cancel {
+    background: #f0f2f1;
+    color: #344139;
+    padding: 11px 22px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  @media(max-width: 767px) {
+    .edit-title { font-size: 20px; }
+    .edit-card-body { padding: 18px; }
+    .edit-card-header { padding: 18px; }
+    .edit-actions { flex-direction: column-reverse; }
+    .edit-actions a,
+    .edit-actions button { width: 100%; text-align: center; }
+  }
+</style>
+
+<div class="main-container edit-booking-page">
+  <div class="pd-ltr-20 xs-pd-20-10">
+
+    <!-- Page header -->
+    <div class="edit-header">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h4 class="edit-title">Edit Booking</h4>
+          <p class="edit-subtitle">
+            Update booking information and manage the assigned artisan.
+          </p>
+        </div>
+
+        <div class="col-md-4 text-md-right">
+          <a href="/admin/booking/show/<%= booking.id %>"
+             class="btn btn-outline-secondary btn-sm">
+            <i class="fa fa-arrow-left"></i> Back to Details
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flash messages -->
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-danger alert-dismissible fade show">
+        <strong>Error!</strong> <%= error %>
+        <button type="button" class="close" data-dismiss="alert">
+          <span>&times;</span>
+        </button>
+      </div>
+    <% } %>
+
+    <div class="row">
+
+      <!-- Edit form -->
+      <div class="col-lg-8">
+
+        <form action="/admin/booking/edit/<%= booking.id %>" method="POST">
+
+          <!-- Job information -->
+          <div class="edit-card">
+            <div class="edit-card-header">
+              <h5>
+                <span class="edit-section-icon">
+                  <i class="fa fa-briefcase"></i>
+                </span>
+                Job Information
+              </h5>
+              <p>Update the service and description for this booking.</p>
+            </div>
+
+            <div class="edit-card-body">
+
+              <div class="form-group-custom">
+                <label class="form-label-custom">Service / Job Title</label>
+                <input
+                  type="text"
+                  name="service"
+                  class="form-control-custom"
+                  value="<%= booking.service || '' %>"
+                  placeholder="e.g. Electrical Installation"
+                  required
+                >
+              </div>
+
+              <div class="form-group-custom">
+                <label class="form-label-custom">Job Description</label>
+                <textarea
+                  name="description"
+                  class="form-control-custom"
+                  placeholder="Describe the customer's requirements..."
+                  required
+                ><%= booking.description || '' %></textarea>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Assignment -->
+          <div class="edit-card">
+            <div class="edit-card-header">
+              <h5>
+                <span class="edit-section-icon">
+                  <i class="fa fa-users"></i>
+                </span>
+                Booking Assignment
+              </h5>
+              <p>Change the customer or artisan assigned to this booking.</p>
+            </div>
+
+            <div class="edit-card-body">
+
+              <div class="form-group-custom">
+                <label class="form-label-custom">Customer</label>
+                <select name="client_id" class="form-control-custom" required>
+                  <% customers.forEach(customer => { %>
+                    <option
+                      value="<%= customer.id %>"
+                      <%= String(booking.client_id) === String(customer.id) ? 'selected' : '' %>
+                    >
+                      <%= customer.fullname %> - <%= customer.email %>
+                    </option>
+                  <% }) %>
+                </select>
+                <small class="form-hint">Select the customer who requested this booking.</small>
+              </div>
+
+              <div class="form-group-custom">
+                <label class="form-label-custom">Assigned Artisan</label>
+                <select name="artisan_id" class="form-control-custom">
+                  <option value="">Not assigned</option>
+
+                  <% artisans.forEach(artisan => { %>
+                    <option
+                      value="<%= artisan.id %>"
+                      <%= String(booking.artisan_id) === String(artisan.id) ? 'selected' : '' %>
+                    >
+                      <%= artisan.fullname %> - <%= artisan.email %>
+                    </option>
+                  <% }) %>
+                </select>
+                <small class="form-hint">Choose an artisan to handle this booking.</small>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Appointment and status -->
+          <div class="edit-card">
+            <div class="edit-card-header">
+              <h5>
+                <span class="edit-section-icon">
+                  <i class="fa fa-calendar"></i>
+                </span>
+                Appointment & Status
+              </h5>
+              <p>Manage the scheduled date and booking progress.</p>
+            </div>
+
+            <div class="edit-card-body">
+              <div class="row">
+
+                <div class="col-md-6">
+                  <div class="form-group-custom">
+                    <label class="form-label-custom">Preferred Date</label>
+                    <input
+                      type="date"
+                      name="preferred_date"
+                      class="form-control-custom"
+                      value="<%= formatDateInput(booking.preferred_date) %>"
+                    >
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group-custom">
+                    <label class="form-label-custom">Booking Status</label>
+                    <select name="status" class="form-control-custom" required>
+                      <option value="pending" <%= currentStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+                      <option value="accepted" <%= currentStatus === 'accepted' ? 'selected' : '' %>>Accepted</option>
+                      <option value="completed" <%= currentStatus === 'completed' ? 'selected' : '' %>>Completed</option>
+                      <option value="rejected" <%= currentStatus === 'rejected' ? 'selected' : '' %>>Rejected</option>
+                    </select>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <div class="edit-actions mb-30">
+            <a href="/admin/booking/show/<%= booking.id %>"
+               class="btn btn-cancel">
+              Cancel
+            </a>
+
+            <button type="submit" class="btn btn-save">
+              <i class="fa fa-save mr-2"></i>
+              Save Changes
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-lg-4">
+
+        <div class="edit-card">
+          <div class="edit-card-header">
+            <h5>Booking Summary</h5>
+            <p>Current booking information.</p>
+          </div>
+
+          <div class="edit-card-body">
+            <div class="booking-summary">
+
+              <div class="summary-label">Booking Reference</div>
+              <div class="summary-value">
+                #<%= booking.booking_id || booking.id %>
+              </div>
+
+              <div class="summary-label">Customer</div>
+              <div class="summary-value">
+                <%= booking.customer_name || 'Unknown customer' %>
+              </div>
+
+              <div class="summary-label">Artisan</div>
+              <div class="summary-value">
+                <%= booking.artisan_name || 'Not assigned' %>
+              </div>
+
+              <div class="summary-label">Current Status</div>
+              <div class="summary-value">
+                <%= currentStatus %>
+              </div>
+
+              <div class="summary-label">Date Created</div>
+              <div class="summary-value">
+                <%= booking.created_at
+                  ? new Date(booking.created_at).toLocaleDateString('en-GB')
+                  : 'Not available' %>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="edit-card">
+          <div class="edit-card-body">
+            <h6 class="font-weight-bold mb-2">Important Note</h6>
+            <p class="text-muted mb-0" style="font-size:12px; line-height:1.8;">
+              Changes made here will update the booking record. Ensure the
+              assigned artisan and appointment date are correct before saving.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<%- include('../../layouts/footer') %>

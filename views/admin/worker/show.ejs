@@ -391,6 +391,7 @@
             border-radius: 14px;
             border: 1px solid #edf0f4;
             box-shadow: 0 3px 15px rgba(15, 23, 42, .04);
+            padding: 20px;
         }
 
         /* Buttons */
@@ -441,6 +442,13 @@
             font-weight: 600;
             font-size: 10px;
         }
+        .gradient {
+  background: #DC2424;
+  background: linear-gradient(
+    to right,
+    #DC2424,#4A569D
+  );
+}
 
         /* Mobile */
         @media (max-width: 767px) {
@@ -475,14 +483,14 @@
         <div class="page-header mb-30">
             <div class="row align-items-center">
                 <div class="col-md-8">
-                    <h4 class="font-weight-700 mb-1">Artisan Details</h4>
-                    <p class="text-muted mb-0">
+                    <h6 class="font-weight-100 mb-1">Artisan Details</h6>
+                    <small class="text-muted mb-0">
                         Manage artisan profile, portfolio, jobs and performance.
-                    </p>
+                    </small>
                 </div>
 
                 <div class="col-md-4 text-md-right mt-3 mt-md-0">
-                    <a href="/admin/artisans" class="btn btn-outline-secondary btn-sm">
+                    <a href="/admin/worker" class="btn btn-outline-secondary btn-sm">
                         <i class="fa fa-arrow-left mr-1"></i> Go Back
                     </a>
                 </div>
@@ -510,7 +518,7 @@
         <% } %>
 
         <!-- ARTISAN PROFILE -->
-        <div class="card-box pd-30 mb-30">
+        <div class="card-box pd-30 mb-30 gradient">
             <div class="row align-items-center">
 
                 <div class="col-md-2 text-center">
@@ -528,8 +536,8 @@
                 </div>
 
                 <div class="col-md-7">
-                    <div class="d-flex align-items-center flex-wrap mb-2">
-                        <h3 class="font-weight-700 mb-0 mr-2">
+                    <div class="d-flex align-items-center flex-wrap mb-2" style="color: white;">
+                        <h3 class="font-weight-700 text-light mb-0 mr-2">
                             <%= artisan.fullname || "Unknown Artisan" %>
                         </h3>
 
@@ -544,20 +552,12 @@
                         <% } %>
                     </div>
 
-                    <p class="text-muted mb-2">
+                    <p class="text-light mb-2 text-capitalize">
                         <i class="fa fa-envelope mr-2"></i>
                         <%= artisan.email || "No email provided" %>
                     </p>
 
-                    <p class="text-muted mb-2">
-                        <i class="fa fa-phone mr-2"></i>
-                        <%= artisan.phone || "No phone number" %>
-                    </p>
-
-                    <p class="text-muted mb-0">
-                        <i class="fa fa-map-marker mr-2"></i>
-                        <%= artisan.city || artisan.location || "Location unavailable" %>
-                    </p>
+                    
                 </div>
 
                 <div class="col-md-3 text-md-right mt-3 mt-md-0">
@@ -571,7 +571,7 @@
                         </span>
                     <% } %>
 
-                    <p class="text-muted small mb-0">Artisan ID</p>
+                    <p class="text-light small mb-0">Artisan ID</p>
                     <h5>#<%= artisan.id %></h5>
                 </div>
 
@@ -587,7 +587,7 @@
                         <div>
                             <p class="text-muted mb-1">Total Jobs</p>
                             <h3 class="font-weight-700">
-                                <%= stats.totalJobs || 0 %>
+                             <%= bookings.length %>
                             </h3>
                         </div>
                         <div class="stat-icon bg-blue">
@@ -604,7 +604,7 @@
                         <div>
                             <p class="text-muted mb-1">Completed Jobs</p>
                             <h3 class="font-weight-700 text-success">
-                                <%= stats.completedJobs || 0 %>
+                              <%= bookings.filter(b => b.status === "completed").length %>
                             </h3>
                         </div>
                         <div class="stat-icon bg-green">
@@ -621,7 +621,7 @@
                         <div>
                             <p class="text-muted mb-1">Pending Jobs</p>
                             <h3 class="font-weight-700 text-warning">
-                                <%= stats.pendingJobs || 0 %>
+                                <%= bookings.filter(b => b.status === "pending").length %>
                             </h3>
                         </div>
                         <div class="stat-icon bg-orange">
@@ -638,7 +638,7 @@
                         <div>
                             <p class="text-muted mb-1">Work Uploads</p>
                             <h3 class="font-weight-700">
-                                <%= stats.totalUploads || 0 %>
+                                0
                             </h3>
                         </div>
                         <div class="stat-icon bg-purple">
@@ -667,7 +667,7 @@
                         <strong><%= artisan.fullname || "Not provided" %></strong>
                     </div>
 
-                    <div class="info-item">
+                    <div class="info-item text-capitalize">
                         <small>Email Address</small>
                         <strong><%= artisan.email || "Not provided" %></strong>
                     </div>
@@ -690,7 +690,7 @@
                     <div class="info-item">
                         <small>Registration Date</small>
                         <strong>
-                            <%= artisan.date ? new Date(artisan.date).toLocaleDateString() : "Not available" %>
+                            <%= artisan.date ? new Date(artisan.date).toDateString() : "Not available" %>
                         </strong>
                     </div>
                 </div>
@@ -754,67 +754,15 @@
                         </div>
 
                         <span class="badge badge-primary">
-                            <%= workUploads.length %> Uploads
+                           0 Uploads
                         </span>
                     </div>
 
-                    <% if (workUploads && workUploads.length > 0) { %>
-
-                        <div class="row">
-
-                            <% workUploads.forEach(work => { %>
-
-                                <div class="col-md-6 col-xl-4 mb-4">
-                                    <div class="portfolio-card">
-
-                                        <a
-                                            href="/uploads/<%= work.image %>"
-                                            target="_blank"
-                                        >
-                                            <img
-                                                src="/uploads/<%= work.image %>"
-                                                alt="<%= work.title || 'Artisan work' %>"
-                                                class="portfolio-image"
-                                            >
-                                        </a>
-
-                                        <div class="p-3">
-                                            <h6 class="font-weight-700 mb-1">
-                                                <%= work.title || "Untitled Work" %>
-                                            </h6>
-
-                                            <p class="text-muted small mb-2">
-                                                <%= work.description || "No description provided." %>
-                                            </p>
-
-                                            <small class="text-muted">
-                                                <i class="fa fa-calendar mr-1"></i>
-                                                <%= work.created_at
-                                                    ? new Date(work.created_at).toLocaleDateString()
-                                                    : "Date unavailable" %>
-                                            </small>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                            <% }) %>
-
-                        </div>
-
-                    <% } else { %>
-
-                        <div class="empty-state">
-                            <i class="fa fa-picture-o"></i>
-                            <h6>No Work Uploads Yet</h6>
-                            <p>This artisan has not uploaded any portfolio samples.</p>
-                        </div>
-
-                    <% } %>
+                  
 
                 </div>
 
-                <!-- COMPLETED JOBS -->
+                      <!-- COMPLETED JOBS -->
                 <div class="card-box pd-25">
 
                     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -905,6 +853,9 @@
 
                 </div>
 
+
+             
+
             </div>
         </div>
 
@@ -913,4 +864,3 @@
 
 <%- include('../../layouts/footer') %>
 
-<%- include('../../layouts/footer') %>
