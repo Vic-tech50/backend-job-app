@@ -9,6 +9,121 @@ router.get('/dashboard', function(req, res, next) {
   res.render('dashboard');
 });
 
+router.get('/faqs', async function(req, res, next) {
+   try{
+  const [faqs] = await db.query("SELECT * FROM faqs ORDER BY id DESC");
+  res.render('admin/faq/index',  {faqs})
+  }catch(err){
+    console.log(err.message)
+  }
+});
+
+router.get("/faqs/delete/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [rows] = await db.query("SELECT * FROM faqs WHERE id = ?", [id]);
+    if (rows.length === 0) {
+      req.flash("error", "Faq not found.");
+      return res.redirect("/admin/faqs");
+    }
+
+    await db.query("DELETE FROM faqs WHERE id = ?", [id]);
+    req.flash("success", "Faqs deleted successfully!");
+    res.redirect("/admin/faqs");
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "Something went wrong while deleting the faq.");
+    res.redirect("/admin/faqs");
+  }
+});
+
+router.get('/faqs/create', function(req, res, next) {
+  res.render('admin/faq/create');
+});
+
+// Add multiple FAQs
+router.post('/faqs', async (req, res) => {
+    try {
+        let { question, answer, type } = req.body;
+
+        // Ensure both values are arrays
+        question = Array.isArray(question) ? question : [question];
+        answer = Array.isArray(answer) ? answer : [answer];
+        type = Array.isArray(type) ? type : [type];
+
+        // Check that both arrays have matching lengths
+        if (question.length !== answer.length) {
+            req.flash('error','Questions and answers do not match.');
+        }
+
+        // Validate the number of FAQs
+        if (question.length === 0 || question.length > 50) {
+            req.flash('error','Invalid number of FAQs.');
+        }
+
+        // Prepare FAQ records
+        const faqs = [];
+
+        for (let i = 0; i < question.length; i++) {
+
+            const q = typeof question[i] === 'string'
+                ? question[i].trim()
+                : '';
+
+            const a = typeof answer[i] === 'string'
+                ? answer[i].trim()
+                : '';
+
+            const t = typeof type[i] === 'string'
+                ? type[i].trim()
+                : '';
+
+            if (!q || !a || !t) {
+                req.flash('error',
+                    `Question and answer ${i + 1} are required.`
+                );
+            }
+
+            faqs.push([q, a, t]);
+        }
+
+        // Start database transaction
+        const connection = await db.getConnection();
+
+        try {
+            await connection.beginTransaction();
+
+            // Insert all FAQs
+            await connection.query(
+                `INSERT INTO faqs (question, answer, type) VALUES ?`,
+                [faqs]
+            );
+
+            // Commit transaction
+            await connection.commit();
+
+            return res.redirect('/admin/faqs');
+
+        } catch (error) {
+
+            // Roll back if something goes wrong
+            await connection.rollback();
+
+            throw error;
+
+        } finally {
+            connection.release();
+        }
+
+    } catch (error) {
+
+        console.error('FAQ Error:', error);
+
+        req.flash('error', 'Unable to save FAQs. Please try again.');
+    }
+});
+
 router.get('/jobs', async (req, res) => {
   try{
   const [jobs] = await db.query("SELECT * FROM jobs  ORDER BY name ASC");

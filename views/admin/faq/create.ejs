@@ -1,0 +1,439 @@
+
+<%- include('../../layouts/head') %>
+
+<style>
+    /* Main page styling */
+    .faq-page {
+        padding: 20px;
+    }
+
+    .faq-header {
+        background: linear-gradient(135deg, #1b6ec2, #164e91);
+        color: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        box-shadow: 0 5px 20px rgba(27, 110, 194, .15);
+    }
+
+    .faq-header h3 {
+        color: #fff;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .faq-header p {
+        color: rgba(255,255,255,.8);
+        margin: 0;
+    }
+
+    .faq-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 3px 18px rgba(0,0,0,.04);
+        border: 1px solid #edf0f5;
+    }
+
+    .btn-save {
+    background: #093411;
+    border: 0;
+    color: #fff;
+    padding: 11px 22px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+    .faq-item {
+        border: 1px solid #e5eaf1;
+        border-radius: 10px;
+        padding: 22px;
+        margin-bottom: 20px;
+        background: #fff;
+        position: relative;
+        transition: .2s ease;
+    }
+
+    .faq-item:hover {
+        border-color: #b8d4f5;
+        box-shadow: 0 4px 15px rgba(0,0,0,.04);
+    }
+
+    .faq-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .faq-number {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        color: #1b6ec2;
+    }
+
+    .faq-number span {
+        width: 32px;
+        height: 32px;
+        background: #eaf3ff;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .faq-card label {
+        font-weight: 600;
+        color: #344054;
+        margin-bottom: 8px;
+    }
+
+    .faq-card .form-control {
+        border: 1px solid #dce2ea;
+        border-radius: 8px;
+        padding: 12px 14px;
+        height: auto;
+        font-size: 14px;
+        transition: .2s;
+    }
+
+    .faq-card .form-control:focus {
+        border-color: #1b6ec2;
+        box-shadow: 0 0 0 3px rgba(27,110,194,.10);
+    }
+
+    .faq-card textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .btn-add-faq {
+        border: 1px dashed #1b6ec2;
+        color: #1b6ec2;
+        background: #f4f8ff;
+        border-radius: 8px;
+        padding: 12px 20px;
+        font-weight: 600;
+        transition: .2s;
+        font-size: 12px;
+    }
+
+    .btn-add-faq:hover {
+        background: #e7f1ff;
+        color: #164e91;
+    }
+
+    .btn-remove-faq {
+        border: none;
+        background: #fff0f0;
+        color: #dc3545;
+        border-radius: 7px;
+        padding: 8px 12px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+
+    .btn-remove-faq:hover {
+        background: #dc3545;
+        color: #fff;
+    }
+
+    .faq-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #edf0f5;
+    }
+
+    .btn-submit-faq {
+        background: #1b6ec2;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 13px 28px;
+        font-weight: 600;
+        transition: .2s;
+    }
+
+    .btn-submit-faq:hover {
+        background: #164e91;
+        color: #fff;
+    }
+
+    .faq-empty-note {
+        color: #98a2b3;
+        font-size: 13px;
+    }
+
+    @media(max-width: 576px) {
+        .faq-page {
+            padding: 10px;
+        }
+
+        .faq-header,
+        .faq-card {
+            padding: 18px;
+        }
+
+        .faq-item {
+            padding: 15px;
+        }
+
+        .faq-actions {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .btn-submit-faq {
+            width: 100%;
+        }
+    }
+</style>
+<div class="main-container">
+<div class="pd-ltr-20 xs-pd-20-10 faq-page">
+
+    <!-- Page heading -->
+      <div class="page-header-modern mb-4">
+        <div class="row align-items-center">
+          <div class="col-md-7">
+            <h4 class="page-title">Faq</h4>
+            <p class="page-subtitle">
+               Add questions and answers to help users find information quickly.
+            </p>
+          </div>
+
+          <div class="col-md-5">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb justify-content-md-end">
+                <li class="breadcrumb-item">
+                  <a href="/home">Home</a>
+                </li>
+                <li class="breadcrumb-item active">Faqs</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+  
+
+    <!-- FAQ Banner -->
+    <!-- <div class="faq-header">
+        <div class="row align-items-center">
+            <div class="col-md-9">
+                <h3>
+                    <i class="fa fa-question-circle mr-2"></i>
+                    Create Frequently Asked Questions
+                </h3>
+                <p>
+                    Add questions and answers to help users find information quickly.
+                </p>
+            </div>
+
+            <div class="col-md-3 text-md-right mt-3 mt-md-0">
+                <i class="fa fa-comments-o"
+                   style="font-size:65px;opacity:.25;"></i>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- FAQ Form -->
+    <div class="faq-card">
+
+        <div class="mb-4">
+            <h5 class="font-weight-bold mb-1">FAQ Information</h5>
+            <p class="text-muted mb-0">
+                You can add multiple questions before submitting.
+            </p>
+        </div>
+
+        <form action="/admin/faqs" method="POST">
+
+            <input type="hidden" name="_token" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+
+            <div id="items">
+
+                <!-- First FAQ Item -->
+                <div class="faq-item">
+
+                    <div class="faq-item-header">
+                        <div class="faq-number">
+                            <span>1</span>
+                            Question & Answer
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Question</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="question[]"
+                            placeholder="e.g. How can I register on this platform?"
+                            required
+                        >
+                    </div>
+
+                    
+                    <div class="form-group">
+                        <label>For </label>
+
+                        <select class="custom-select col-12" name="type[]" required>
+									<option selected="">Choose...</option>
+									<option value="Worker">Worker</option>
+									<option value="Messenger">Messenger</option>
+									
+								</select>
+                        
+                    </div>
+
+                    <div class="form-group mb-0">
+                        <label>Answer</label>
+                        <textarea
+                            class="form-control"
+                            name="answer[]"
+                            placeholder="Enter a detailed answer..."
+                            required
+                        ></textarea>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Form Actions -->
+            <div class="faq-actions">
+
+                <button
+                    type="button"
+                    class="btn-add-faq"
+                    id="add-item"
+                >
+                    <i class="fa fa-plus-circle mr-2"></i>
+                    Add Another Question
+                </button>
+
+                <button type="submit" class="btn btn-save">
+                    <i class="fa fa-save mr-2"></i>
+                    Save All FAQs
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const itemsContainer = document.getElementById('items');
+        const addButton = document.getElementById('add-item');
+
+        // Update FAQ numbering
+        function updateNumbers() {
+            const faqItems = itemsContainer.querySelectorAll('.faq-item');
+
+            faqItems.forEach((item, index) => {
+                item.querySelector('.faq-number span').textContent = index + 1;
+            });
+        }
+
+        // Add new FAQ
+        addButton.addEventListener('click', function () {
+
+            const newItem = document.createElement('div');
+
+            newItem.className = 'faq-item';
+
+            newItem.innerHTML = `
+                <div class="faq-item-header">
+                    <div class="faq-number">
+                        <span></span>
+                        Question & Answer
+                    </div>
+
+                    <button type="button" class="btn-remove-faq">
+                        <i class="fa fa-trash mr-1"></i>
+                        Remove
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label>Question</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="question[]"
+                        placeholder="Enter your question..."
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                        <label>For </label>
+
+                        <select class="custom-select col-12" name="type[]" required>
+									<option selected="">Choose...</option>
+									<option value="Worker">Worker</option>
+									<option value="Messenger">Messenger</option>
+									
+								</select>
+                        
+                    </div>
+
+                <div class="form-group mb-0">
+                    <label>Answer</label>
+                    <textarea
+                        class="form-control"
+                        name="answer[]"
+                        placeholder="Enter a detailed answer..."
+                        required
+                    ></textarea>
+                </div>
+            `;
+
+            itemsContainer.appendChild(newItem);
+
+            updateNumbers();
+
+            // Focus on the new question
+            newItem.querySelector('input').focus();
+
+        });
+
+        // Remove FAQ using event delegation
+        itemsContainer.addEventListener('click', function (e) {
+
+            const removeButton = e.target.closest('.btn-remove-faq');
+
+            if (!removeButton) return;
+
+            const faqItems = itemsContainer.querySelectorAll('.faq-item');
+
+            // Always keep at least one FAQ item
+            if (faqItems.length <= 1) {
+                alert('At least one FAQ item is required.');
+                return;
+            }
+
+            removeButton.closest('.faq-item').remove();
+
+            updateNumbers();
+
+        });
+
+    });
+</script>
+
+<%- include('../../layouts/footer') %>
