@@ -231,4 +231,177 @@ router.post("/updateprofile", async (req, res) => {
   }
 });
 
+router.get('/login', function(req, res) {
+  res.render('admin/auth/login');
+});
+
+
+router.post("/admin/login", loginLimiter, async (req, res) => {
+    try {
+        // Get login details
+        let { email, password } = req.body;
+
+        // Basic validation
+        if (!email || !password) {
+            req.flash("error", "Email and password are required");
+            return res.redirect("/auth/login");
+        }
+
+        // Normalize email
+        email = email.trim().toLowerCase();
+
+        // Check if session middleware is configured
+        if (!req.session) {
+            throw new Error("Session middleware is not configured");
+        }
+
+        // Find user in database
+        const [rows] = await db.query(
+            "SELECT * FROM users WHERE email = ? LIMIT 1",
+            [email]
+        );
+
+        // Check if user exists
+        if (rows.length === 0) {
+            req.flash("error", "Invalid email or password");
+            return res.redirect("/auth/login");
+        }
+
+        const user = rows[0];
+
+        // Verify password
+        const validPassword = await bcrypt.compare(
+            password,
+            user.password
+        );
+
+        if (!validPassword) {
+            req.flash("error", "Invalid email or password");
+            return res.redirect("/auth/login");
+        }
+
+        // Check user role BEFORE creating an authenticated session
+        if (user.role !== "admin") {
+            req.flash("error", "You are not authorized to access this area");
+            return res.redirect("/auth/login");
+        }
+
+        // Regenerate session to prevent session fixation
+        await new Promise((resolve, reject) => {
+            req.session.regenerate((err) => {
+                if (err) return reject(err);
+                resolve();
+            });
+        });
+
+        // Store authenticated user information
+        req.session.user = {
+            id: user.id,
+            name: user.name,
+            image: user.image,
+            date: user.date,
+            email: user.email,
+            address: user.address,
+            country: user.country,
+            phone: user.phone,
+            role: user.role
+        };
+
+        // Explicitly save session before redirecting
+        await new Promise((resolve, reject) => {
+            req.session.save((err) => {
+                if (err) return reject(err);
+                resolve();
+            });
+        });
+
+        // Redirect to admin dashboard
+        return res.redirect("/admin/dashboard");
+
+    } catch (err) {
+
+        console.error("Admin Login Error:", err);
+
+        req.flash("error", "Something went wrong. Please try again.");
+
+        return res.redirect("/auth/login");
+    }
+});
+
+router.get("/admin/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Could not log out.");
+    }
+    res.clearCookie("connect.sid");
+    res.redirect("/auth/login");
+  });
+});
+
+
+// router.post("/admin/login", loginLimiter, async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     // Basic validation
+//     if (!email || !password) {
+//       req.flash("error", "Email and password are required");
+//     }
+
+//     // Find user
+//     const [rows] = await db.query(
+//       "SELECT * FROM users WHERE email = ?",
+//       [email]
+//     );
+
+//     if (rows.length === 0) {
+//      req.flash("error", "User Not Found");
+//      return res.redirect('back');
+//     }
+
+//     const user = rows[0];
+
+//     // Check password
+//     const validPassword = await bcrypt.compare(password, user.password);
+//     if (!validPassword) {
+//       req.flash("error", "Invalid Credentials");
+//       return res.redirect('back');
+//     }
+
+//     // Generate JWT
+//     const token = jwt.sign(
+//       { id: user.id, email: user.email, role: user.role },
+//       process.env.JWT_SECRET,
+//       { expiresIn: "7d" }
+//     );
+
+//        // Set session data
+//     req.session.user = {
+//       id: user.id,
+//       name: user.name,
+//       image: user.image,
+//       date: user.date,
+//       email: user.email,
+//       address: user.address,
+//       country: user.country,
+//       phone: user.phone,
+//       role: user.role,
+//     };
+
+//      // Redirect based on role
+//     if (user.role === "admin") { 
+//       return res.redirect("/admin/dashboard");
+//     } else {
+//       req.flash('error', 'You are not allowed')
+//       return res.redirect('back');
+//     }
+
+//   } catch (err) {
+//     console.error(err);
+//    req.flash("error", "Something Went Wrong");
+//    return res.redirect('back');
+//   }
+// });
+
 module.exports = router;

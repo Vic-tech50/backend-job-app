@@ -9,6 +9,8 @@ router.get('/dashboard', function(req, res, next) {
   res.render('dashboard');
 });
 
+
+
 router.get('/faqs', async function(req, res, next) {
    try{
   const [faqs] = await db.query("SELECT * FROM faqs ORDER BY id DESC");

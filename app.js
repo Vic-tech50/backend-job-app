@@ -10,7 +10,7 @@ const moment = require('moment');
 // For flash Message
 const session = require('express-session');
 const flash = require('connect-flash');
-
+const { isAdmin,isAuthenticated } = require('./middleware/auth');
 
 
 
@@ -48,6 +48,11 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+    res.locals.user = req.session?.user || null;
+    next();
+});
+
 
 app.use(express.json());
 
@@ -69,7 +74,9 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/api', apiRouter);
-app.use('/admin', adminRouter);
+// app.use('/admin', adminRouter);
+app.use('/admin', isAdmin, adminRouter);
+// 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
