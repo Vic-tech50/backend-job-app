@@ -1,0 +1,384 @@
+
+<%- include('../../layouts/head') %>
+
+
+<style>
+    
+  .page-header-modern {
+    margin-bottom: 25px;
+  }
+
+  .page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #17221a;
+    margin-bottom: 5px;
+  }
+
+  .page-subtitle {
+    color: #7b8794;
+    font-size: 14px;
+    margin-bottom: 0;
+  }
+
+  .breadcrumb-modern {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+  }
+
+  .breadcrumb-modern .breadcrumb-item {
+    font-size: 13px;
+  }
+
+  .breadcrumb-modern a {
+    color: #7b8794;
+  }
+
+  .breadcrumb-modern .active {
+    color: #093411;
+    font-weight: 600;
+  }
+  .edit-booking-page {
+    background: #f6f8fb;
+  }
+
+  .edit-header {
+    margin-bottom: 25px;
+  }
+
+  .edit-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #17221a;
+    margin-bottom: 5px;
+  }
+
+  .edit-subtitle {
+    font-size: 13px;
+    color: #89949c;
+  }
+
+  .edit-card {
+    background: #fff;
+    border: 0;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 25px rgba(0,0,0,.045);
+    margin-bottom: 22px;
+  }
+
+  .edit-card-header {
+    padding: 21px 25px;
+    border-bottom: 1px solid #edf0f2;
+  }
+
+  .edit-card-header h5 {
+    color: #25312a;
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 4px;
+  }
+
+  .edit-card-header p {
+    color: #89949c;
+    font-size: 12px;
+    margin: 0;
+  }
+
+  .edit-card-body {
+    padding: 25px;
+  }
+
+  .form-label-custom {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #344139;
+    margin-bottom: 8px;
+  }
+
+  .form-control-custom {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid #e4e9e6;
+    border-radius: 8px;
+    padding: 10px 13px;
+    font-size: 13px;
+    color: #344139;
+    background: #fff;
+    outline: none;
+    transition: border .2s;
+  }
+
+  .form-control-custom:focus {
+    border-color: #16803a;
+    box-shadow: 0 0 0 3px rgba(22,128,58,.08);
+  }
+
+  textarea.form-control-custom {
+    min-height: 125px;
+    resize: vertical;
+  }
+
+  .form-group-custom {
+    margin-bottom: 22px;
+  }
+
+  .form-hint {
+    display: block;
+    color: #98a2a9;
+    font-size: 11px;
+    margin-top: 6px;
+  }
+
+  .edit-section-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 9px;
+    background: #eaf7ed;
+    color: #16803a;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+  }
+
+  .booking-summary {
+    background: #f8faf9;
+    border: 1px solid #edf0f2;
+    border-radius: 10px;
+    padding: 18px;
+  }
+
+  .summary-label {
+    color: #98a2a9;
+    font-size: 11px;
+    margin-bottom: 5px;
+  }
+
+  .summary-value {
+    color: #25312a;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    word-break: break-word;
+  }
+
+  .edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 10px;
+  }
+
+  .btn-save {
+    background: #093411;
+    border: 0;
+    color: #fff;
+    padding: 11px 22px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .btn-save:hover {
+    background: #145522;
+    color: #fff;
+  }
+
+  .btn-cancel {
+    background: #f0f2f1;
+    color: #344139;
+    padding: 11px 22px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  @media(max-width: 767px) {
+    .edit-title { font-size: 20px; }
+    .edit-card-body { padding: 18px; }
+    .edit-card-header { padding: 18px; }
+    .edit-actions { flex-direction: column-reverse; }
+    .edit-actions a,
+    .edit-actions button { width: 100%; text-align: center; }
+  }
+</style>
+
+<div class="main-container ">
+  <div class="pd-ltr-20 xs-pd-20-10">
+
+    <!-- Page header -->
+    
+      <div class="page-header-modern">
+
+        <div class="row align-items-center">
+
+          <div class="col-md-7 col-sm-12">
+
+            <h4 class="page-title">
+              Register Worker
+            </h4>
+
+            <p class="page-subtitle">
+              Manage, monitor and review all agents registered on the platform.
+            </p>
+
+          </div>
+
+          <div class="col-md-5 col-sm-12">
+
+            <nav aria-label="breadcrumb">
+
+              <ol class="breadcrumb breadcrumb-modern justify-content-md-end">
+
+                <li class="breadcrumb-item">
+                  <a href="/admin/dashboard">
+                    Home
+                  </a>
+                </li>
+
+                <li class="breadcrumb-item active">
+                  Add Worker
+                </li>
+
+              </ol>
+
+            </nav>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+    <div class="">
+
+      <!-- Edit form -->
+      <div class="container">
+
+           <% if (success && success.length> 0) { %>
+
+	<div class="alert alert-success alert-dismissible fade show" role="alert">
+								<strong>Success!</strong> <%= success %>.
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+
+	
+	<% } %>
+
+	<% if (error && error.length> 0) { %>
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+								<strong>Error!</strong> <%= error %>.
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+	<% } %>
+
+        <form action="/admin/worker" method="POST">
+
+          <!-- Job information -->
+          <div class="edit-card">
+            <div class="edit-card-header">
+              <h5>
+                <span class="edit-section-icon">
+                  <i class="fa fa-briefcase"></i>
+                </span>
+                Personal Information
+              </h5>
+              <p>Update the service and description for this booking.</p>
+            </div>
+
+            <div class="edit-card-body">
+
+              <div class="form-group-custom">
+                <label class="form-label-custom">Full Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  class="form-control-custom"
+                  value=""
+                  placeholder="e.g. Emeka Ibrahim"
+                  required
+                >
+              </div>
+
+              <div class="form-group-custom">
+                <label class="form-label-custom">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  class="form-control-custom"
+                  value=""
+                  placeholder="e.g. example@gmail.com"
+                  required
+                >
+              </div>
+
+              <div class="form-group-custom">
+                <label class="form-label-custom">Phone Number</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  class="form-control-custom"
+                  value=""
+                  placeholder="e.g. 090..."
+                  required
+                >
+              </div>
+
+              
+                 <div class="form-group-custom">
+                    <label class="form-label-custom">Gender</label>
+                    <select name="gender" class="form-control-custom" required>
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Others">Other</option>
+                     
+                    </select>
+                  </div>
+              
+
+               <div class="form-group-custom">
+                <label class="form-label-custom">Date Of Birth</label>
+                <input
+                  type="date"
+                  name="dob"
+                  class="form-control-custom"
+                  required
+                >
+              </div>
+
+              
+
+            </div>
+          </div>
+
+          
+
+
+          <!-- Submit -->
+          <div class="edit-actions mb-30">
+            
+
+            <button type="submit" class="btn btn-save">
+              <i class="fa fa-save mr-2"></i>
+              Add Worker
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+<%- include('../../layouts/footer') %>

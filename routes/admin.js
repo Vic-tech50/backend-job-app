@@ -371,6 +371,57 @@ router.get('/messenger', async (req, res) => {
   }
 })
 
+router.get('/messenger/create', (req, res) => {
+  try{
+  res.render('admin/messenger/create')
+  }catch(err){
+    console.log(err.message)
+  }
+})
+
+router.post("/messenger", async (req, res) => {
+  try {
+    
+    const { name, email, phone, gender, dob } = req.body;
+
+      // Basic validation
+    if (!name || !email || !phone || !gender || !dob) {
+      req.flash('error', "All fields are required");
+      return res.redirect("back");
+    }
+
+    const [existing] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    if (existing.length > 0){
+      req.flash('error', "Email already exists" );
+      return res.redirect("back");
+    }
+
+    const date = new Date();
+    const hashed = await bcrypt.hash("password", 10);
+    const role = "Messenger"
+    const status = 1
+
+    await db.query("INSERT INTO users (fullname, email, phone, gender, role,date, password, status) VALUES (?, ?, ?, ?, ?, ?, ?,?)", [
+      name,
+      email,
+      phone,
+      gender,
+      role || "Messenger",
+      date,
+      hashed,
+      status
+
+    ]);
+  
+
+    req.flash('success', "Worker registered successfully" );
+    return res.redirect("back");
+  } catch (err) {
+    req.flash('error',  err.message );
+    return res.redirect("back");
+  }
+});
+
 router.get('/worker', async (req, res) => {
   try{
     role = "Messenger"
@@ -380,6 +431,55 @@ router.get('/worker', async (req, res) => {
     console.log(err.message)
   }
 })
+
+router.get('/worker/create', (req, res) => {
+  try{
+  res.render('admin/worker/create')
+  }catch(err){
+    console.log(err.message)
+  }
+})
+
+router.post("/worker", async (req, res) => {
+  try {
+    
+    const { name, email, phone, gender, dob } = req.body;
+
+      // Basic validation
+    if (!name || !email || !phone || !gender || !dob) {
+      req.flash('error', "All fields are required");
+      return res.redirect("back");
+    }
+
+    const [existing] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    if (existing.length > 0){
+      req.flash('error', "Email already exists" );
+      return res.redirect("back");
+    }
+
+    const date = new Date();
+    const hashed = await bcrypt.hash("password", 10);
+    const role = "Worker"
+
+    await db.query("INSERT INTO users (fullname, email, phone, gender, role,date, password) VALUES (?, ?, ?, ?, ?, ?, ?)", [
+      name,
+      email,
+      phone,
+      gender,
+      role || "Worker",
+      date,
+      hashed
+
+    ]);
+  
+
+    req.flash('success', "Worker registered successfully" );
+    return res.redirect("back");
+  } catch (err) {
+    req.flash('error',  err.message );
+    return res.redirect("back");
+  }
+});
 
 router.get('/bookings', async (req, res) => {
   try{
@@ -623,6 +723,9 @@ router.get('/worker/show/:id', async (req, res) => {
     res.redirect("/admin/worker/show/:id");
   }
 });
+
+
+
 
 
 router.post('/messenger/block/:id', async (req, res) => {
