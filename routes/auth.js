@@ -232,7 +232,10 @@ router.post("/updateprofile", async (req, res) => {
 });
 
 router.get('/login', function(req, res) {
-  res.render('admin/auth/login');
+  res.render('admin/auth/login',  {
+        success: req.query.success === 'password-updated',
+        error: req.query.error || null
+    });
 });
 
 
@@ -297,7 +300,7 @@ router.post("/admin/login", loginLimiter, async (req, res) => {
         // Store authenticated user information
         req.session.user = {
             id: user.id,
-            name: user.name,
+            name: user.fullname,
             image: user.image,
             date: user.date,
             email: user.email,

@@ -1,12 +1,158 @@
 var express = require('express');
 require("dotenv").config();
 var router = express.Router();
+const bcrypt = require("bcryptjs"); //To Hash The Password
 const db = require("../db"); //import database connection from db.js
 const moment = require('moment'); // npm install moment for diffForHuman date format()
 
 
 router.get('/dashboard', function(req, res, next) {
   res.render('dashboard');
+});
+
+router.get('/profile', function(req, res) {
+  res.render('admin/settings/profile')
+});
+
+router.post('/profile/update', async (req, res) => {
+    try {
+        // Check if the user is logged in
+        if (!req.session.user) {
+            req.flash('error', 'Please login to continue.');
+            return res.redirect('/admin/login');
+        }
+
+        // Get the logged-in user's ID
+        const { id } = req.session.user;
+
+        // Get submitted form data
+        let { name, email, phone } = req.body;
+
+        // Validate required fields
+        if (!name || !email || !phone) {
+            req.flash('error', 'Please complete all required fields.');
+            return res.redirect('back');
+        }
+
+        // Clean the submitted data
+        name = name.trim();
+        email = email.trim().toLowerCase();
+        phone = phone.trim();
+
+        // Check if the user exists
+        const [existing] = await db.query(
+            'SELECT id FROM users WHERE id = ? LIMIT 1',
+            [id]
+        );
+
+        if (existing.length === 0) {
+            req.flash('error', 'User account not found.');
+            return res.redirect('back');
+        }
+
+        // Check if another user already uses this email
+        const [emailExists] = await db.query(
+            'SELECT id FROM users WHERE email = ? AND id != ? LIMIT 1',
+            [email, id]
+        );
+
+        if (emailExists.length > 0) {
+            req.flash('error', 'This email address is already in use.');
+            return res.redirect('back');
+        }
+
+        // Update user profile
+        await db.query(`
+            UPDATE users
+            SET
+                fullname = ?,
+                email = ?,
+                phone = ?
+            WHERE id = ?
+        `, [
+            name,
+            email,
+            phone,
+            id
+        ]);
+
+        // Update the session with the new information
+        req.session.user.name = name;
+        req.session.user.email = email;
+        req.session.user.phone = phone;
+
+        req.flash('success', 'Profile updated successfully.');
+
+        return res.redirect('back');
+
+    } catch (err) {
+        console.error('Profile Update Error:', err);
+
+        req.flash('error', 'Unable to update profile. Please try again.');
+
+        return res.redirect('back');
+    }
+});
+
+
+router.post("/security", async (req, res) => {
+  try {
+    const { currentpassword, password, confirmpassword } = req.body;
+
+    // ✅ 1. Get current logged-in user from session
+    const user = req.session.user;
+    const id = user.id;
+
+    if (password !== confirmpassword) {
+      req.flash('error', 'Passwords do not match');
+      return res.redirect('back');
+    }
+
+    // ✅ 2. Get the actual hashed password from the database
+    const [rows] = await db.query("SELECT password FROM users WHERE id = ?", [id]);
+    if (rows.length === 0) {
+      req.flash('error', 'User not found');
+      return res.redirect('back');
+    }
+
+    const dbPassword = rows[0].password;
+
+    // ✅ 3. Compare current password with the one in DB
+    const validPassword = await bcrypt.compare(currentpassword, dbPassword);
+    if (!validPassword) {
+      req.flash('error', 'Invalid current password');
+      return res.redirect('back');
+    }
+
+    // ✅ 4. Hash the new password before saving
+    const hashedNewPassword = await bcrypt.hash(password, 10);
+
+    // ✅ 5. Update in DB
+    await db.query("UPDATE users SET password = ? WHERE id = ?", [hashedNewPassword, id]);
+
+    // ✅ 6. Optionally, destroy session to force re-login
+    // Destroy the current session to force the user to log in again
+req.session.destroy((err) => {
+    if (err) {
+        console.error('Session destroy error:', err);
+        return res.redirect('/auth/login?error=session');
+    }
+
+    // Clear the session cookie
+    res.clearCookie('connect.sid');
+
+    // Redirect with a success message
+    return res.redirect('/auth/login?success=password-updated');
+});
+    // req.session.destroy((err) => {
+    //   if (err) console.error("Session destroy error:", err);
+    //   req.flash('success', 'Password updated successfully. Please log in again.');
+    //   res.redirect("/auth/login");
+    // });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: err.message });
+  }
 });
 
 
